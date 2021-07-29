@@ -4,97 +4,61 @@ namespace EncoraTest1
 {
     static class Program
     {
-        private static int index = 0;
-        private static string input;
+        //Added the below constant just in the case you can to run the program and see N times.
+        private const int repeater = 7;
         static void Main(string[] args)
         {
             //Add intro messages and awaiting for key to start.
-            Console.WriteLine("Hello Encora Team!");
-            Console.WriteLine("This test made by Dylan Arroyo.");
+            Console.WriteLine("Hello Encora & CBRE Team!");
+            Console.WriteLine("This test was done by Dylan Arroyo.");
             Console.WriteLine("Press any key to start...");
             Console.ReadKey();
-            //Doing a loop when the user wants to try again the exercise.
-            bool again = true;
-            while (again)
+
+            //Request user input for a word to be included in the looper
+            var funcTest = makeLooper(cleanInput());
+            //Loop to display the results
+            for (int i = 0; i < repeater; i++)
             {
-                //Starting a refresh exercise.
-                Console.Clear();
-                Console.WriteLine("There are two options:");
-                Console.WriteLine("Press 1 to do a loop and continues until Escape key is pressed.");
-                Console.WriteLine("Press 2 to do a loop and prints the input until reach the end and start back at the beginning");
-                var menu = Console.ReadLine();
-
-                //Doing a menu depending on choice and returning if not valid choice.
-                switch (menu)
-                {
-                    case "1":
-                        cleanInput();
-                        do
-                        {
-                            Console.WriteLine(makeLooper(input));
-                        } while (Console.ReadKey().Key != ConsoleKey.Escape);
-                        break;
-                    case "2":
-                        cleanInput();
-                        makeLooperAlt(input);
-                        Console.ReadKey();
-                        break;
-                    default:
-                        return;
-                }
-
-                //Reading loop choice.
-                Console.WriteLine("Do you know to try another phrase? (Y/N)");
-                again = Console.ReadLine().Equals("Y", StringComparison.OrdinalIgnoreCase);
+                Console.WriteLine(funcTest.Invoke());
             }
+
+            Console.WriteLine("Exercise done.");
+            Console.ReadKey();
         }
 
         /// <summary>
-        /// Returning a string for each char of the text and restating index once reaches the end.
+        /// Return a character Function for each char according the index given from the mod result.
         /// </summary>
         /// <param name="text"></param>
-        static string makeLooper(string text)
+        static Func<char> makeLooper(string text)
         {
-            //Getting the char according the index given in a continues loop
-            var result = text.Substring(index, 1);
-            index = text.Length - 1 ==  index ? 0 : ++index;
+            //Once the word reaches the end the mod result will be 0 and incremental for every call.
+            int idx = 0;
+            return () => text[idx++ % text.Length];
+        }
+
+        /// <summary>
+        /// Alternative way: Return a character Function for each char in the text and reset the index once reaches the end.
+        /// </summary>
+        /// <param name="text"></param>
+        static Func<char> makeLooperAlt(string text)
+        {
+            int idx = 0;
+            char result()
+            {
+                char rtnChar = text[idx];
+                //Calculate index based in the length and reset to 0 once reaches the end.
+                idx = (idx == text.Length - 1 ? 0 : ++idx);
+                return rtnChar;
+            }
             return result;
         }
 
-        /// <summary>
-        /// Returning a string for each char of the text until reaches end and starts back.
-        /// </summary>
-        /// <param name="text"></param>
-        static string makeLooperAlt(string text)
-        {
-            //Validate if it's a valid text.
-            if (text.Length > 0)
-            {
-                int i = 0;
-                //Loop depending of the length.
-                while (i != text.Length + 1)
-                {
-                    //Validating if i value is equal to the input length then assigning 0 value to start again or increasing i count.
-                    var result = i == text.Length
-                        ? text.Substring(0, 1)
-                        : text.Substring(i, 1);
-                    //Printing result and increasing i count.
-                    Console.WriteLine(result);
-                    i++;
-                }
-                return "The exercise is completed";
-            }
-            else
-            {
-                return "Please give a phrase or word to work.";
-            }
-        }
-
-        static void cleanInput()
+        static string cleanInput()
         {
             Console.Clear();
             Console.WriteLine("Please enter a word: ");
-            input = Console.ReadLine();
+            return Console.ReadLine();
         }
 
     }
